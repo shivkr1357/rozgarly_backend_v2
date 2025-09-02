@@ -1,7 +1,6 @@
 import { createServer } from 'http';
 import { env } from './config/env.js';
 import { initializeFirebase } from './config/firebase.js';
-import { logger } from './middlewares/logger.js';
 
 // Initialize Firebase FIRST before importing any models
 initializeFirebase();
@@ -22,12 +21,6 @@ const io = initSockets(server);
 const PORT = env.PORT || 3000;
 
 server.listen(PORT, () => {
-  logger.info(`🚀 Rozgarly API server is running on port ${PORT}`, {
-    port: PORT,
-    environment: env.NODE_ENV,
-    timestamp: new Date().toISOString(),
-  });
-
   console.log(`
   ╔══════════════════════════════════════╗
   ║        Rozgarly API Server           ║
@@ -46,30 +39,30 @@ server.listen(PORT, () => {
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  logger.info('SIGTERM received, shutting down gracefully');
+  console.log('SIGTERM received, shutting down gracefully');
   server.close(() => {
-    logger.info('Process terminated');
+    console.log('Process terminated');
     process.exit(0);
   });
 });
 
 process.on('SIGINT', () => {
-  logger.info('SIGINT received, shutting down gracefully');
+  console.log('SIGINT received, shutting down gracefully');
   server.close(() => {
-    logger.info('Process terminated');
+    console.log('Process terminated');
     process.exit(0);
   });
 });
 
 // Handle uncaught exceptions
 process.on('uncaughtException', error => {
-  logger.error('Uncaught Exception:', error);
+  console.error('Uncaught Exception:', error);
   process.exit(1);
 });
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
   process.exit(1);
 });
 

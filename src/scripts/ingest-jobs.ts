@@ -5,7 +5,6 @@ import { initializeFirebase } from '../config/firebase.js';
 import { JobService } from '../services/JobService.js';
 import { JobSource, JobType } from '../models/Job.js';
 import axios from 'axios';
-import { logger } from '../middlewares/logger.js';
 
 // Initialize Firebase
 initializeFirebase();
@@ -56,12 +55,12 @@ class JobIngestionService {
 
   async ingestAdzunaJobs(country: string = 'in', resultsPerPage: number = 50): Promise<void> {
     if (!this.adzunaAppId || !this.adzunaAppKey) {
-      logger.warn('Adzuna credentials not configured, skipping Adzuna ingestion');
+      console.warn('Adzuna credentials not configured, skipping Adzuna ingestion');
       return;
     }
 
     try {
-      logger.info('Starting Adzuna job ingestion', { country, resultsPerPage });
+      console.log('Starting Adzuna job ingestion', { country, resultsPerPage });
 
       const response = await axios.get('https://api.adzuna.com/v1/api/jobs/search/1', {
         params: {
@@ -106,7 +105,7 @@ class JobIngestionService {
           if (error instanceof Error && error.message.includes('already exists')) {
             duplicateCount++;
           } else {
-            logger.error('Error ingesting Adzuna job', {
+            console.error('Error ingesting Adzuna job', {
               jobId: adzunaJob.id,
               error: error instanceof Error ? error.message : 'Unknown error',
             });
@@ -114,13 +113,13 @@ class JobIngestionService {
         }
       }
 
-      logger.info('Adzuna ingestion completed', {
+      console.log('Adzuna ingestion completed', {
         totalJobs: jobs.length,
         ingested: ingestedCount,
         duplicates: duplicateCount,
       });
     } catch (error) {
-      logger.error('Error during Adzuna ingestion', {
+      console.error('Error during Adzuna ingestion', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
@@ -128,12 +127,12 @@ class JobIngestionService {
 
   async ingestJoobleJobs(query: string = 'developer', location: string = 'india'): Promise<void> {
     if (!this.joobleApiKey) {
-      logger.warn('Jooble API key not configured, skipping Jooble ingestion');
+      console.warn('Jooble API key not configured, skipping Jooble ingestion');
       return;
     }
 
     try {
-      logger.info('Starting Jooble job ingestion', { query, location });
+      console.log('Starting Jooble job ingestion', { query, location });
 
       const response = await axios.get('https://jooble.org/api/1', {
         params: {
@@ -174,7 +173,7 @@ class JobIngestionService {
           if (error instanceof Error && error.message.includes('already exists')) {
             duplicateCount++;
           } else {
-            logger.error('Error ingesting Jooble job', {
+            console.error('Error ingesting Jooble job', {
               jobId: joobleJob.id,
               error: error instanceof Error ? error.message : 'Unknown error',
             });
@@ -182,13 +181,13 @@ class JobIngestionService {
         }
       }
 
-      logger.info('Jooble ingestion completed', {
+      console.log('Jooble ingestion completed', {
         totalJobs: jobs.length,
         ingested: ingestedCount,
         duplicates: duplicateCount,
       });
     } catch (error) {
-      logger.error('Error during Jooble ingestion', {
+      console.error('Error during Jooble ingestion', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
@@ -216,7 +215,7 @@ class JobIngestionService {
   }
 
   async runIngestion(): Promise<void> {
-    logger.info('Starting job ingestion process');
+    console.log('Starting job ingestion process');
 
     // Ingest from multiple sources
     await Promise.all([
@@ -226,7 +225,7 @@ class JobIngestionService {
       this.ingestJoobleJobs('programmer', 'india'),
     ]);
 
-    logger.info('Job ingestion process completed');
+    console.log('Job ingestion process completed');
   }
 }
 
@@ -237,11 +236,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   ingestionService
     .runIngestion()
     .then(() => {
-      logger.info('Ingestion script completed successfully');
+      console.log('Ingestion script completed successfully');
       process.exit(0);
     })
     .catch(error => {
-      logger.error('Ingestion script failed', {
+      console.error('Ingestion script failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
       });
       process.exit(1);

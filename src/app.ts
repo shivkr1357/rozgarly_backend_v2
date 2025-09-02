@@ -17,7 +17,7 @@ import {
   apiLimiter,
   ingestionLimiter,
 } from './middlewares/rateLimiter.js';
-import { requestLogger, errorLogger } from './middlewares/logger.js';
+
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 
 async function createApp() {
@@ -57,9 +57,6 @@ async function createApp() {
   // Body parsing middleware
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-  // Request logging
-  app.use(requestLogger);
 
   // Rate limiting
   app.use('/api/auth', authLimiter);
@@ -107,7 +104,6 @@ async function createApp() {
   });
 
   // Error handling middleware
-  app.use(errorLogger);
   app.use(notFoundHandler);
   app.use(errorHandler);
 

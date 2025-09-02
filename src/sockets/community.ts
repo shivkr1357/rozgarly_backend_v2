@@ -1,6 +1,5 @@
 import { Server, Namespace } from 'socket.io';
 import { CommunityService } from '../services/CommunityService.js';
-import { logger } from '../middlewares/logger.js';
 
 export const setupCommunityNamespace = (io: Server): void => {
   const communityNamespace: Namespace = io.of('/community');
@@ -24,7 +23,7 @@ export const setupCommunityNamespace = (io: Server): void => {
 
       next();
     } catch (error) {
-      logger.error('Community namespace authentication failed', {
+      console.error('Community namespace authentication failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
         socketId: socket.id,
       });
@@ -35,7 +34,7 @@ export const setupCommunityNamespace = (io: Server): void => {
   communityNamespace.on('connection', socket => {
     const userId = socket.data.user.uid;
 
-    logger.info('User connected to community namespace', {
+    console.log('User connected to community namespace', {
       userId,
       socketId: socket.id,
     });
@@ -79,13 +78,13 @@ export const setupCommunityNamespace = (io: Server): void => {
           messages: messages.data,
         });
 
-        logger.info('User joined group room', {
+        console.log('User joined group room', {
           userId,
           groupId,
           socketId: socket.id,
         });
       } catch (error) {
-        logger.error('Error joining group room', {
+        console.error('Error joining group room', {
           userId,
           error: error instanceof Error ? error.message : 'Unknown error',
           socketId: socket.id,
@@ -109,13 +108,13 @@ export const setupCommunityNamespace = (io: Server): void => {
           timestamp: new Date().toISOString(),
         });
 
-        logger.info('User left group room', {
+        console.log('User left group room', {
           userId,
           groupId,
           socketId: socket.id,
         });
       } catch (error) {
-        logger.error('Error leaving group room', {
+        console.error('Error leaving group room', {
           userId,
           error: error instanceof Error ? error.message : 'Unknown error',
           socketId: socket.id,
@@ -173,14 +172,14 @@ export const setupCommunityNamespace = (io: Server): void => {
             },
           });
 
-          logger.info('Message sent', {
+          console.log('Message sent', {
             userId,
             groupId,
             messageId: message.id,
             socketId: socket.id,
           });
         } catch (error) {
-          logger.error('Error sending message', {
+          console.error('Error sending message', {
             userId,
             error: error instanceof Error ? error.message : 'Unknown error',
             socketId: socket.id,
@@ -207,13 +206,13 @@ export const setupCommunityNamespace = (io: Server): void => {
           });
         }
 
-        logger.info('Message edited', {
+        console.log('Message edited', {
           userId,
           messageId,
           socketId: socket.id,
         });
       } catch (error) {
-        logger.error('Error editing message', {
+        console.error('Error editing message', {
           userId,
           error: error instanceof Error ? error.message : 'Unknown error',
           socketId: socket.id,
@@ -238,13 +237,13 @@ export const setupCommunityNamespace = (io: Server): void => {
           messageId,
         });
 
-        logger.info('Message deleted', {
+        console.log('Message deleted', {
           userId,
           messageId,
           socketId: socket.id,
         });
       } catch (error) {
-        logger.error('Error deleting message', {
+        console.error('Error deleting message', {
           userId,
           error: error instanceof Error ? error.message : 'Unknown error',
           socketId: socket.id,
@@ -271,14 +270,14 @@ export const setupCommunityNamespace = (io: Server): void => {
           });
         }
 
-        logger.info('Reaction added', {
+        console.log('Reaction added', {
           userId,
           messageId,
           emoji,
           socketId: socket.id,
         });
       } catch (error) {
-        logger.error('Error adding reaction', {
+        console.error('Error adding reaction', {
           userId,
           error: error instanceof Error ? error.message : 'Unknown error',
           socketId: socket.id,
@@ -305,14 +304,14 @@ export const setupCommunityNamespace = (io: Server): void => {
           });
         }
 
-        logger.info('Reaction removed', {
+        console.log('Reaction removed', {
           userId,
           messageId,
           emoji,
           socketId: socket.id,
         });
       } catch (error) {
-        logger.error('Error removing reaction', {
+        console.error('Error removing reaction', {
           userId,
           error: error instanceof Error ? error.message : 'Unknown error',
           socketId: socket.id,
@@ -342,7 +341,7 @@ export const setupCommunityNamespace = (io: Server): void => {
 
     // Handle disconnection
     socket.on('disconnect', reason => {
-      logger.info('User disconnected from community namespace', {
+      console.log('User disconnected from community namespace', {
         userId,
         socketId: socket.id,
         reason,
