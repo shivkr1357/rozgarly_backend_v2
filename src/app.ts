@@ -4,7 +4,13 @@ import helmet from 'helmet';
 import compression from 'compression';
 import swaggerUi from 'swagger-ui-express';
 import { env } from './config/env.js';
-import swaggerDocument from '../swagger.json' assert { type: 'json' };
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const swaggerDocument = JSON.parse(readFileSync(join(__dirname, '../swagger.json'), 'utf8'));
 import {
   generalLimiter,
   authLimiter,
